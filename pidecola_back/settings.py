@@ -12,6 +12,19 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+#################################### CUSTOM SETTINGS ####################################
+
+# Custom User Model
+AUTH_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+#########################################################################################
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,6 +44,12 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # Apps agregadas
+    'rest_framework',
+    'users',
+    'rest_framework_simplejwt',
+    
+    # Apps por defecto
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
