@@ -23,9 +23,11 @@ from rest_framework_simplejwt.views import (
 )
 
 from users.urls import router as users_router
+from rides.urls import router as rides_router
 
 main_router = DefaultRouter()
 main_router.registry.extend(users_router.registry)
+main_router.registry.extend(rides_router.registry)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

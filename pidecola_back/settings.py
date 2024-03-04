@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     # Apps agregadas
     'rest_framework',
     'users',
+    'rides',
     'rest_framework_simplejwt',
     
     # Apps por defecto
