@@ -5,11 +5,6 @@ from users.models import User
 class Route(models.Model):
     name = models.CharField(max_length=32)
 
-class RideRequest(models.Model):
-    user = models.ForeignKey(User, related_name='ride_requests', on_delete=models.DO_NOTHING)
-    route = models.ForeignKey(Route, on_delete=models.DO_NOTHING)
-    timestamp = models.DateTimeField(auto_now=True)
-
 class Ride(models.Model):
 
     PENDING = 'pending'
@@ -25,3 +20,9 @@ class Ride(models.Model):
     route = models.ForeignKey(Route, on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=16, choices=STATUS_OPTIONS)
+
+class RideRequest(models.Model):
+    user = models.ForeignKey(User, related_name='ride_requests', on_delete=models.DO_NOTHING)
+    route = models.ForeignKey(Route, on_delete=models.DO_NOTHING)
+    timestamp = models.DateTimeField(auto_now=True)
+    ride = models.ForeignKey(Ride, on_delete=models.SET_NULL, null=True)
