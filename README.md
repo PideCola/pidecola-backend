@@ -118,13 +118,13 @@ Al hacer cambios en los modelos, debes ejecutar las migraciones.
 Por sencillez, basta con que detengas el contenedor de docker y lo
 vuelvas a ejecutar para aplicar el cambio.
 
-En la terminal donde ejecutaste `docker compose watch` puedes pulsar `CTRL+C` para detener el servicio y luego escribir
+En la terminal donde ejecutaste `docker compose watch` puedes pulsar `CTRL+C` para detener el servicio watch y
+para detener el contenedor escribe:
 ``` bash
 $ docker compose stop
 ```
-para detener el contenedor.
-Luego, vuelve a ejecutar
+Luego, vuelve a ejecutar el contenedor con:
 ```bash
 $ docker compose watch
 ```
-para volver a ejecutar el contenedor. Este aplicará las migraciones automáticamente.
+Esto aplicará las migraciones automáticamente.
