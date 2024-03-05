@@ -16,12 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.schemas import get_schema_view
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
+    TokenBlacklistView
 )
 
+from auth.views import RegisterView
 from users.urls import router as users_router
 from rides.urls import router as rides_router
 
@@ -31,7 +34,14 @@ main_router.registry.extend(rides_router.registry)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/register/', RegisterView.as_view(), name='auth_register'),
+    path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
     path('', include(main_router.urls)),
+    path("api_schema/", get_schema_view(
+            title="Pidecola 3.1", description="", version="1.0.0"
+            ),
+        name="openapi-schema",
+    ),
 ]
