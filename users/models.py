@@ -15,11 +15,10 @@ class User(AbstractUser):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    role = models.CharField(max_length=16, choices=ROLES)
+    role = models.CharField(max_length=16, choices=ROLES, default=USER)
     rating = models.FloatField(default=5.0)
     rating_count = models.IntegerField(default=0)
-    phone_number_area_code = models.CharField(max_length=4, default='')
-    phone_number = models.CharField(max_length=7, default='')
+    phone_number = models.CharField(max_length=12, default='')
 
     def __str__(self):
         return self.username
