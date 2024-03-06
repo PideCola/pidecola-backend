@@ -1,0 +1,19 @@
+services:
+  server:  
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+    command: >
+      sh -c "python manage.py makemigrations && 
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - 8000:8000
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+        - action: rebuild
+          path: requirements.txt
