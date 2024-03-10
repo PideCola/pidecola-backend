@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.mixins import Response
 from rest_framework.permissions import IsAuthenticated
 from rides.models import Route, RideRequest, Ride
@@ -38,6 +39,25 @@ class RideRequestViewSet(viewsets.ModelViewSet):
         ride_request.save()
         
         return Response(RideRequestSerializer(ride_request).data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['GET'], detail=True)
+    def get_by_user_id(self, request, pk=None):
+        try:
+            user = User.objects.get(pk=pk)
+            ride_requests = RideRequest.objects.filter(user=user)
+
+            # Serialize ride requests with additional route names
+            serialized_requests = []
+            for ride_request in ride_requests:
+                serialized_request = RideRequestSerializer(ride_request).data
+                serialized_request['origin'] = ride_request.origin.name
+                serialized_request['destination'] = ride_request.destination.name
+                serialized_requests.append(serialized_request)
+
+            return Response(serialized_requests, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"message": "El usuario no existe"}, status=status.HTTP_404_NOT_FOUND)
+
 
 class RideViewSet(viewsets.ModelViewSet):
     serializer_class = RideSerializer
