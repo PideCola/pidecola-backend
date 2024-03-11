@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -13,6 +14,9 @@ class RouteViewSet(viewsets.ModelViewSet):
     serializer_class = RouteSerializer
     queryset = Route.objects.all()
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Route.objects.exclude(name="USB")
 
 class RideRequestViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -44,7 +48,7 @@ class RideRequestViewSet(viewsets.ModelViewSet):
     def get_by_user_id(self, request, pk=None):
         try:
             user = User.objects.get(pk=pk)
-            ride_requests = RideRequest.objects.filter(user=user)
+            ride_requests = RideRequest.objects.filter(Q(user=user) & ~Q(status="cancelado"))
 
             # Serialize ride requests with additional route names
             serialized_requests = []
@@ -57,6 +61,17 @@ class RideRequestViewSet(viewsets.ModelViewSet):
             return Response(serialized_requests, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"message": "El usuario no existe"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=['PATCH'], detail=True)
+    def cancel(self, request, pk=None):
+        try:
+            ride_request = RideRequest.objects.get(pk=pk)
+            ride_request.status = RideRequest.CANCELLED
+            ride_request.save()
+            return Response(RideRequestSerializer(ride_request).data, status=status.HTTP_200_OK)
+        except RideRequest.DoesNotExist:
+            return Response({"message": "La solicitud no existe"}, status=status.HTTP_404_NOT_FOUND)
+
 
 
 class RideViewSet(viewsets.ModelViewSet):
