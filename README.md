@@ -48,7 +48,17 @@ $ python manage.py runserver
 ```
 $ python manage.py createsuperuser
 ```
+### Configuracion de grupos/permisos
 
+En Windows:
+```
+Get-Content permissions_setup.py | python manage.py shell
+```
+
+En Unix:
+```
+python manage.py shell < permissions_setup.py
+```
 
 ## Setup con docker
 

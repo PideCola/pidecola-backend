@@ -23,6 +23,11 @@ REST_FRAMEWORK = {
     )
 }
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # this is default
+    'guardian.backends.ObjectPermissionBackend',
+)
+
 #########################################################################################
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -49,6 +54,7 @@ INSTALLED_APPS = [
     'users',
     'rides',
     'rest_framework_simplejwt',
+    'guardian',
     
     # Apps por defecto
     'django.contrib.admin',
