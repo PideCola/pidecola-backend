@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group, Permission
-from permissions import admin_permissions, driver_permissions, user_permissions
+from permissions_settings import admin_permissions, driver_permissions, user_permissions
 
 ADMIN = 'admin'
 USER = 'user'
