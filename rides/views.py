@@ -44,6 +44,29 @@ class RideRequestViewSet(viewsets.ModelViewSet):
         
         return Response(RideRequestSerializer(ride_request).data, status=status.HTTP_201_CREATED)
 
+    def list(self, request):
+        try:
+            ride_requests = RideRequest.objects.filter(~Q(status="cancelado"))
+
+            serialized_requests = []
+            for ride_request in ride_requests:
+                serialized_request = RideRequestSerializer(ride_request).data
+                # Return routes names
+                serialized_request['origin'] = ride_request.origin.name
+                serialized_request['destination'] = ride_request.destination.name
+                serialized_requests.append(serialized_request)
+                # Include user info
+                user_info = {
+                    'id': ride_request.user.id,
+                    'first_name': ride_request.user.first_name,
+                    'last_name': ride_request.user.last_name
+                }
+                serialized_request['user'] = user_info
+
+            return Response(serialized_requests, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(methods=['GET'], detail=True)
     def get_by_user_id(self, request, pk=None):
         try:
