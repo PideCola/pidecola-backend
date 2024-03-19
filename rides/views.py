@@ -46,7 +46,15 @@ class RideRequestViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         try:
-            ride_requests = RideRequest.objects.filter(~Q(status="cancelado"))
+            req_origin = request.query_params.get("origin")
+            req_destination = request.query_params.get("destination")
+            ride_requests = []
+            if req_origin is not None and req_destination is not None:
+                origin = Route.objects.get(name=req_origin)
+                destination = Route.objects.get(name=req_destination)
+                ride_requests = RideRequest.objects.filter(~Q(status="cancelado") & Q(origin=origin) & Q(destination=destination))
+            else:
+                ride_requests = RideRequest.objects.filter(~Q(status="cancelado"))
 
             serialized_requests = []
             for ride_request in ride_requests:
