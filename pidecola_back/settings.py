@@ -18,6 +18,7 @@ from pathlib import Path
 AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
     'rides',
     'rest_framework_simplejwt',
     'guardian',
+    'django_filters',
     
     # Apps por defecto
     'django.contrib.admin',
