@@ -14,4 +14,4 @@ class VehicleSerializer(BaseSerializer):
 
     class Meta:
         model = Vehicle
-        fields = '__all__'
+        fields = ("id", "brand", "model", "seats", "color", "plate", "owner")

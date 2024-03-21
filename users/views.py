@@ -12,15 +12,12 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
 
-    @action(detail=True, methods=['GET'])
+    @action(detail=True, methods=['get', 'post'])
     def vehicles(self, request, pk):
-        try:
+        if request.method == 'GET':
             user = User.objects.get(pk=pk)
-            vehicles_data = VehicleSerializer(user.vehicles.all(), many=True).data
-            return Response(vehicles_data, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        vehicles = VehicleSerializer(user.vehicles.all(), many=True).data
+        return Response(vehicles, status=status.HTTP_200_OK)
 
 class VehicleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
