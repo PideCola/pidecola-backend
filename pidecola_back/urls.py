@@ -33,12 +33,12 @@ main_router.registry.extend(users_router.registry)
 main_router.registry.extend(rides_router.registry)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('auth/register/', RegisterView.as_view({'post': 'create'}), name='auth_register'),
-    path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('auth/logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
-    path('', include(main_router.urls)),
+    path('api/v1/admin/', admin.site.urls),
+    path('api/v1/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/v1/auth/register/', RegisterView.as_view({'post': 'create'}), name='auth_register'),
+    path('api/v1/auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/v1/auth/logout/', TokenBlacklistView.as_view(), name='token_blacklist'),
+    path('api/v1/', include(main_router.urls)),
     # path("api_schema/", get_schema_view(
     #         title="Pidecola 3.1", description="", version="1.0.0"
     #         ),
