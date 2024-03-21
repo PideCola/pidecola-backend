@@ -23,6 +23,11 @@ REST_FRAMEWORK = {
     )
 }
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # this is default
+    'guardian.backends.ObjectPermissionBackend',
+)
+
 #########################################################################################
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,7 +43,7 @@ SECRET_KEY = 'django-insecure-to81=t+gc4eqjqpeh$(+y!h(0s9s28nc_y*)a2*4(lsav9wbx-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['host.docker.internal', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['host.docker.internal', '127.0.0.1', 'localhost', 'pidecola-backend']
 
 
 # Application definition
@@ -49,6 +54,7 @@ INSTALLED_APPS = [
     'users',
     'rides',
     'rest_framework_simplejwt',
+    'guardian',
     
     # Apps por defecto
     'django.contrib.admin',

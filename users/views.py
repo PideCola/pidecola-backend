@@ -19,8 +19,8 @@ class UserViewSet(viewsets.ModelViewSet):
         vehicles = VehicleSerializer(user.vehicles.all(), many=True).data
         return Response(vehicles, status=status.HTTP_200_OK)
 
-
 class VehicleViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = VehicleSerializer
     queryset = Vehicle.objects.all()
+
