@@ -43,4 +43,4 @@ class RideRequest(models.Model):
     timestamp = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=16, choices=STATUS_OPTIONS, default=PENDING)
     ride = models.ForeignKey(Ride, on_delete=models.SET_NULL, null=True)
-
+    is_reviewed = models.BooleanField(default=False)

@@ -76,28 +76,28 @@ class RideRequestViewSet(viewsets.ModelViewSet):
             return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(methods=['GET'], detail=True)
-    def get_by_user_id(self, request, pk=None):
+    def active(self, request, pk=None):
         try:
             user = User.objects.get(pk=pk)
-            ride_requests = RideRequest.objects.filter(Q(user=user) & ~Q(status="cancelado") & ~Q(status="finalizado"))
+            ride_requests = RideRequest.objects.filter(Q(user=user) & ~Q(status="cancelado") & Q(is_reviewed=False))
 
-            # Serialize ride requests with additional route names
-            serialized_requests = []
-            for ride_request in ride_requests:
-                serialized_request = RideRequestSerializer(ride_request).data
-                serialized_request['origin'] = ride_request.origin.name
-                serialized_request['destination'] = ride_request.destination.name
-                if ride_request.ride is not None:
+            # Serialize the first active request (if available)
+            if len(ride_requests) > 0:
+                first_ride_request = ride_requests[0]
+                serialized_request = RideRequestSerializer(first_ride_request).data
+                serialized_request['origin'] = first_ride_request.origin.name
+                serialized_request['destination'] = first_ride_request.destination.name
+                if first_ride_request.ride is not None:
                     user_info = {
-                        'id': ride_request.ride.driver.id,
-                        'first_name': ride_request.ride.driver.first_name,
-                        'last_name': ride_request.ride.driver.last_name,
-                        'phone_number': ride_request.ride.driver.phone_number
+                        'id': first_ride_request.ride.driver.id,
+                        'first_name': first_ride_request.ride.driver.first_name,
+                        'last_name': first_ride_request.ride.driver.last_name,
+                        'phone_number': first_ride_request.ride.driver.phone_number
                     }
                     serialized_request['driver'] = user_info
-                serialized_requests.append(serialized_request)
-
-            return Response(serialized_requests, status=status.HTTP_200_OK)
+                return Response(serialized_request, status=status.HTTP_200_OK)
+            else:
+                return Response({}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"message": "El usuario no existe"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -111,7 +111,22 @@ class RideRequestViewSet(viewsets.ModelViewSet):
         except RideRequest.DoesNotExist:
             return Response({"message": "La solicitud no existe"}, status=status.HTTP_404_NOT_FOUND)
 
-
+    @action(methods=['PATCH'], detail=True)
+    def review(self, request, pk=None):
+        valoration = request.data.get("review")
+        try:
+            ride_request = RideRequest.objects.get(pk=pk)
+            driver = ride_request.ride.driver
+            if (valoration == "like"):
+                driver.likes += 1
+            elif (valoration == "dislike"):
+                driver.dislikes += 1
+            driver.save()
+            ride_request.is_reviewed = True
+            ride_request.save()
+            return Response({"message": "Valoración realizada"}, status=status.HTTP_200_OK)
+        except RideRequest.DoesNotExist:
+            return Response({"message": "La solicitud no existe"}, status=status.HTTP_404_NOT_FOUND)
 
 class RideViewSet(viewsets.ModelViewSet):
     serializer_class = RideSerializer
