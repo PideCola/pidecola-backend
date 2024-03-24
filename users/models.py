@@ -18,6 +18,8 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     role = models.CharField(max_length=16, choices=ROLES, default=USER)
+    likes = models.IntegerField(default=0)
+    dislikes = models.IntegerField(default=0)
     rating = models.FloatField(default=5.0)
     rating_count = models.IntegerField(default=0)
     phone_number = models.CharField(max_length=12, default='')
