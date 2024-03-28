@@ -8,6 +8,8 @@ from rides.models import Route, RideRequest, Ride
 from rides.serializers import RouteSerializer, RideRequestSerializer, RideSerializer
 from custom import CustomPermission
 from users.models import User
+from django.core.mail import EmailMessage
+from django.conf import settings
 
 # Create your views here.
 class RouteViewSet(viewsets.ModelViewSet):
@@ -127,6 +129,19 @@ class RideRequestViewSet(viewsets.ModelViewSet):
             return Response({"message": "Valoración realizada"}, status=status.HTTP_200_OK)
         except RideRequest.DoesNotExist:
             return Response({"message": "La solicitud no existe"}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=['POST'], detail = True)
+    def sendReport(self, request, pk=None):
+      subject = request.data.get('report')
+      message = request.data.get('message')
+      email = EmailMessage(
+        'Denuncia por: {subject}',
+        'Descripcion de la denuncia: {message}',
+        'settings.EMAIL_HOST_USER',
+        ['pruebafceusb@gmail.com']
+      )
+      email.send()
+      return Response({"message": "Email enviado"}, status = status.HTTP_200_OK)  
 
 class RideViewSet(viewsets.ModelViewSet):
     serializer_class = RideSerializer
