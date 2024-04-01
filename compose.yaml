@@ -10,10 +10,5 @@ services:
              python manage.py runserver 0.0.0.0:8000"
     ports:
       - 8000:8000
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /app
-        - action: rebuild
-          path: requirements.txt
+    volumes:
+      - ./:/app/api

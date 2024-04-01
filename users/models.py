@@ -23,6 +23,7 @@ class User(AbstractUser):
     rating = models.FloatField(default=5.0)
     rating_count = models.IntegerField(default=0)
     phone_number = models.CharField(max_length=12, default='')
+    honorific_titles = models.ManyToManyField('HonorificTitle')
 
     def __str__(self):
         return self.username
@@ -39,3 +40,10 @@ class Vehicle(models.Model):
     color = models.CharField(max_length=32)
     plate = models.CharField(max_length=8)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="vehicles")
+
+class HonorificTitle(models.Model):
+    name = models.CharField(max_length=128)
+    description = models.TextField(max_length=128)
+
+    def __str__(self):
+        return self.name
