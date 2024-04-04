@@ -1,5 +1,5 @@
 from django.contrib import admin
-from users.models import User, Vehicle
+from users.models import User, Vehicle, HonorificTitle
 from django.contrib.auth.admin import UserAdmin
 
 # Register your models here.
@@ -20,7 +20,7 @@ class UserAdmin(UserAdmin):
     ordering = ('id', "username", "last_login")
 
     fieldsets = (
-        ('User', {'fields': ('username',"first_name","last_name", 'email', 'password', 'role', 'groups')}),
+        ('User', {'fields': ('username',"first_name","last_name", 'email', 'password', 'role', 'groups', 'honorific_titles')}),
         ('Permissions', {'fields': ('is_active', 'is_superuser', 'is_staff')}),
         ('Dates', {'fields': ('created_at', 'updated_at', 'last_login',)}),
     )
@@ -32,3 +32,12 @@ class UserAdmin(UserAdmin):
         }),
     )
 
+    filter_horizontal = ('honorific_titles',)
+
+class UserInline(admin.TabularInline):
+    model = User.honorific_titles.through
+    extra = 1
+
+@admin.register(HonorificTitle)
+class HonorificTitleAdmin(admin.ModelAdmin):
+    inlines = [UserInline]
