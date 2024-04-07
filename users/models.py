@@ -23,13 +23,16 @@ class User(AbstractUser):
     rating = models.FloatField(default=5.0)
     rating_count = models.IntegerField(default=0)
     phone_number = models.CharField(max_length=12, default='')
-    honorific_titles = models.ManyToManyField('HonorificTitle')
+    honorific_titles = models.ManyToManyField('HonorificTitle', blank=True)
 
     def __str__(self):
         return self.username
     
 @receiver(post_save, sender=User)
 def add_to_group(sender, instance, **kwargs):
+    # Anonymous user must not belong to any group
+    if instance.username == "AnonymousUser": return
+    
     g = Group.objects.get(name=instance.role)
     instance.groups.add(g)
 

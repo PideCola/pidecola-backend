@@ -1,7 +1,7 @@
-# pidecola_back
-Backend de pidecolausb
+# Pidecola Backend
+Servicio backend de pidecolausb
 
-## Setup inicial
+## Setup Local
 ### Creacion de virtualenv
 ```
 $ python -m venv <nombre del virtual env>
@@ -48,16 +48,16 @@ $ python manage.py runserver
 ```
 $ python manage.py createsuperuser
 ```
-### Configuracion de grupos/permisos
+### Configuracion inicial
 
 En Windows:
 ```
-Get-Content permissions_setup.py | python manage.py shell
+Get-Content setup.py | python manage.py shell
 ```
 
 En Unix:
 ```
-python manage.py shell < permissions_setup.py
+python manage.py shell < setup.py
 ```
 
 ## Setup con docker
@@ -68,21 +68,40 @@ $ docker compose build
 ```
 Espera a que termine, puede durar, depende de la conexión a internet
 
-Luego, inicia el servicio y la sincronización de los archivos con:
+Luego, inicia el servicio con:
 ```bash
-$ docker compose watch
-```
-Esto inicia el servidor pero no muestra los logs del programa.
-Para ver los logs, abre una nueva terminal, posicionate en el directorio
-del código y ejecuta el siguiente comando:
-```bash
-$ docker compose logs -f
+$ docker compose up
 ```
 
-Si es la primera vez que ejecutas el programa, debes crear un superuser
+Si es la primera vez que ejecutas el servicio, debes realizar el proceso de setup inicial. No te preocupes por las migraciones, el comando ```docker compose up``` se encarga de aplicarlas al iniciar el servicio
+
+## Setup inicial
+### Poblar la base de datos
+
+Crea los grupos/permisos y rutas por defecto:
+
+``` bash
+$ python manage.py shell < setup.py
+```
+No ejecutes este script mas de una vez
 
 ### Creación de superuser
-Para ejecutar comandos en el contenedor, asegúrate que el contenedor está corriendo.
+Para utilizar el panel de administrador de django, debes crear un superusuario
+
+``` bash
+$ python manage.py createsuperuser
+```
+Esto te llevará por un proceso interactivo para asignar nombre de usuario y contraseña. Comprueba el estado del servicio iniciando sesion en el panel de administrador. Este se encuentra en: ```{BASE_URL}/api/v1/admin/``` donde BASE_URL es el dominio donde esta montado el servicio. Si lo estas ejecutando es la misma máquina, este debería ser ```http://localhost:8000/api/v1/admin/ ```
+
+Terminado este proceso, ya puedes iniciar el servicio de frontend
+
+
+### Entorno de desarrollo en docker
+
+Vea que el archivo `compose.yaml` inicia el contenedor con un volumen. Esto sincroniza los archivos de la máquina anfitriona con el contenedor. Por tanto, los cambios en el código se verán reflejados en el contenedor.
+
+Ahora, para ejecutar comandos en el contenedor, asegúrate que este está corriendo.
+
 Ejecuta el siguiente comando:
 ```bash
 $ docker ps
@@ -101,40 +120,16 @@ $ docker exec -it 53dbe6c8ab6b bash
 ```
 Con esto estarás conectado al contenedor y puedes ejecutar comandos de bash. (¡Prueba con `ls -l`!)
 
-Particularmente, para crear el superuser de django, ejecuta:
+Con esto ya puedes ejecutar los comandos de setup inicial indicados previamente.
 
-``` bash
-$ python manage.py createsuperuser
-```
-Esto te llevará por un proceso interactivo para asignar nombre de usuario y contraseña
-
-Una vez terminado el proceso de creación, puedes salir de la sesión de bash con:
-``` bash
-$ exit
-```
-
-Ya sólo te queda probar la conexión con el servidor. Abre un navegador y visita la siguiente url:
-```
-http://localhost:8000/admin
-```
-Escribe las credenciales con las que creaste el superuser para iniciar sesión
-
-Para detener el servicio, ejecuta el siguiente comando el directorio:
-``` bash
-$ docker compose stop
-```
-### Lidiando con migraciones en docker
+#### Lidiando con migraciones en docker
 Al hacer cambios en los modelos, debes ejecutar las migraciones.
 Por sencillez, basta con que detengas el contenedor de docker y lo
 vuelvas a ejecutar para aplicar el cambio.
 
-En la terminal donde ejecutaste `docker compose watch` puedes pulsar `CTRL+C` para detener el servicio watch y
-para detener el contenedor escribe:
-``` bash
-$ docker compose stop
-```
+En la terminal donde ejecutaste `docker compose up` puedes pulsar `CTRL+C` para detener el servicio.
 Luego, vuelve a ejecutar el contenedor con:
 ```bash
-$ docker compose watch
+$ docker compose up
 ```
 Esto aplicará las migraciones automáticamente.
